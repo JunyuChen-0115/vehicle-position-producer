@@ -1,4 +1,4 @@
-package org.jychen.vehiclepositionproducer;
+package org.jychen.vehicle.position.producer;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

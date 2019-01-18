@@ -1,4 +1,4 @@
-package org.jychen.vehiclepositionproducer;
+package org.jychen.vehicle.position.producer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
