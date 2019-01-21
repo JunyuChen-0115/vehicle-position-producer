@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Component
 public class VehiclePositionProducer {
@@ -28,7 +31,17 @@ public class VehiclePositionProducer {
     public void sendMessage(VehiclePositionDTO vehiclePositionDTO) {
         try {
             logger.info("Sending position record: {}", objectMapper.writeValueAsString(vehiclePositionDTO));
-            kafkaTemplate.send(TOPIC_NAME, vehiclePositionDTO);
+            ListenableFuture<SendResult<String, VehiclePositionDTO>> future =  kafkaTemplate.send(TOPIC_NAME, vehiclePositionDTO);
+            future.addCallback(new ListenableFutureCallback<SendResult<String, VehiclePositionDTO>>() {
+                @Override
+                public void onFailure(Throwable ex) {
+                    logger.error("An error occurred during send.", ex);
+                }
+
+                @Override
+                public void onSuccess(SendResult<String, VehiclePositionDTO> result) {
+                }
+            });
         } catch (JsonProcessingException e) {
             logger.error("Failed to send message to queue.", e);
         }

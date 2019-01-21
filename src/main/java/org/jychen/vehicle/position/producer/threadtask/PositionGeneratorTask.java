@@ -49,7 +49,7 @@ public class PositionGeneratorTask implements Callable<String> {
             vehiclePositionDTO.setTs(new Timestamp(System.currentTimeMillis()));
 
             vehiclePositionProducer.sendMessage(vehiclePositionDTO);
-            Thread.sleep((long) (Math.random() * 1000 + 2000));
+            Thread.sleep((long) (Math.random() * 2000 + 1000));
         }
 
         return vehicleName;

@@ -14,9 +14,10 @@ public class CoreConfig {
 
     @Bean
     public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+        // A cached thread pool instance to allow one thread per task
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setCorePoolSize(1);
-        threadPoolTaskExecutor.setMaxPoolSize(2);
+        threadPoolTaskExecutor.setCorePoolSize(0);
+        threadPoolTaskExecutor.setQueueCapacity(0);
         threadPoolTaskExecutor.initialize();
         return threadPoolTaskExecutor;
     }
