@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 @Component
@@ -20,21 +21,17 @@ public class PositionGeneratorTask implements Callable<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(PositionGeneratorTask.class);
 
-    private int id;
-
     private String vehicleName;
 
     private List<String> vehiclePositions;
 
     private ObjectMapper objectMapper;
 
-    @Autowired
     private VehiclePositionProducer vehiclePositionProducer;
 
-    public PositionGeneratorTask(int id, String vehicleName, List<String> vehiclePositions) {
-        this.id = id;
-        this.vehicleName = vehicleName;
-        this.vehiclePositions = vehiclePositions;
+    @Autowired
+    public PositionGeneratorTask(VehiclePositionProducer vehiclePositionProducer) {
+        this.vehiclePositionProducer = vehiclePositionProducer;
         objectMapper = new ObjectMapper();
     }
 
@@ -45,29 +42,32 @@ public class PositionGeneratorTask implements Callable<String> {
             double latitude = Double.valueOf(position[1]);
             double longitude = Double.valueOf(position[3]);
             VehiclePositionDTO vehiclePositionDTO = new VehiclePositionDTO();
-            vehiclePositionDTO.setId(id);
+            vehiclePositionDTO.setId(UUID.randomUUID());
             vehiclePositionDTO.setVehicleName(vehicleName);
             vehiclePositionDTO.setLatitude(latitude);
             vehiclePositionDTO.setLongitude(longitude);
-            vehiclePositionDTO.setTimestamp(new Timestamp(System.currentTimeMillis()));
+            vehiclePositionDTO.setTs(new Timestamp(System.currentTimeMillis()));
 
             vehiclePositionProducer.sendMessage(vehiclePositionDTO);
-            //logger.info("Waiting for next position record...");
-            Thread.sleep((long) (Math.random() * 1000));
+            Thread.sleep((long) (Math.random() * 1000 + 2000));
         }
 
         return vehicleName;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getVehicleName() {
         return vehicleName;
     }
 
+    public void setVehicleName(String vehicleName) {
+        this.vehicleName = vehicleName;
+    }
+
     public List<String> getVehiclePositions() {
         return vehiclePositions;
+    }
+
+    public void setVehiclePositions(List<String> vehiclePositions) {
+        this.vehiclePositions = vehiclePositions;
     }
 }

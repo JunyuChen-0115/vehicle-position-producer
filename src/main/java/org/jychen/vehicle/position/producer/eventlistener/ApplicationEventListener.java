@@ -42,9 +42,11 @@ public class ApplicationEventListener {
         for (Resource resource : availableResources) {
             logger.info("File with name {} is found.", resource.getFilename());
             String vehicleName = resource.getFilename();
-            int vehicleId = vehicleName.hashCode();
             List<String> vehiclePositions = FileUtils.readLines(resource.getFile());
-            PositionGeneratorTask task = applicationContext.getBean(PositionGeneratorTask.class, vehicleId, vehicleName, vehiclePositions);
+            PositionGeneratorTask task = applicationContext.getBean(PositionGeneratorTask.class);
+            task.setVehicleName(vehicleName);
+            task.setVehiclePositions(vehiclePositions);
+
             Future<String> future = threadPoolTaskExecutor.submit(task);
             logger.info("isDone: {}", future.isDone());
             String result = future.get();
